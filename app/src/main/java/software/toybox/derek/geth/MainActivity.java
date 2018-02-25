@@ -18,7 +18,6 @@ import org.ethereum.geth.NodeInfo;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button createAccBtn;
     private TextView accDisplayTextView;
 
     @Override
@@ -26,7 +25,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        createAccBtn = (Button) findViewById(R.id.create_acc_btn);
         accDisplayTextView = (TextView) findViewById(R.id.acc_display_textview);
 
         try {
@@ -36,12 +34,6 @@ public class MainActivity extends AppCompatActivity {
 
             GethNodeHolder gethNode = GethNodeHolder.getInstance();
             gethNode.setNode(node);
-
-            KeyStore ks = new KeyStore(getFilesDir() + "/keystore", Geth.LightScryptN, Geth.LightScryptP);
-            Account newAccount = ks.newAccount("Password");
-
-            Log.d("account address: ", newAccount.getAddress().getHex());
-            gethNode.setAccount(newAccount);
 
         } catch (Exception e) {
             Log.e("error: ", e.getMessage());
@@ -53,14 +45,18 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             GethNodeHolder gethNodeHolder = GethNodeHolder.getInstance();
-            Node node = gethNodeHolder.getNode();
+            Node gethNode = gethNodeHolder.getNode();
 
-            if (node != null) {
-                NodeInfo nodeInfo = node.getNodeInfo();
-                EthereumClient ethClient = node.getEthereumClient();
+            if (gethNode != null) {
 
-                Account newAccount = gethNodeHolder.getAccount();
-                accDisplayTextView.setText("Here is your Account Address: " + newAccount.getAddress().getHex());
+                KeyStore ks = new KeyStore(getFilesDir() + "/keystore", Geth.LightScryptN, Geth.LightScryptP);
+                Account newAccount = ks.newAccount("Password");
+
+                Log.d("account address: ", newAccount.getAddress().getHex());
+                gethNodeHolder.setAccount(newAccount);
+
+                Account account = gethNodeHolder.getAccount();
+                accDisplayTextView.setText("Here is your Account Address: " + account.getAddress().getHex());
             }
         } catch (Exception e) {
             Log.d("error: ", e.getMessage());
